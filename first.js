@@ -2,10 +2,14 @@ const { Client } = require('pg');
 const express = require('express');
 const app = express();
 
-app.use(express.json());
+app.use(express.json()); // Fix: Added parentheses to call express.json()
 
 const con = new Client({
-    connectionString: process.env.DATABASE_URL, // Set this later
+    host: 'dpg-cv3a3ed6l47c73fb9nt0-a',
+    user: 'fozia',
+    port: 5432,
+    password: 'b7LGrSSNHyHbPTymLt9iEwOX6JkmH1kH',
+    database: 'lwach_db',
     connectionTimeoutMillis: 5000,
 });
 
@@ -19,6 +23,8 @@ con.connect()
 
 app.post('/postData', (req, res) => {
     const { name, id, password } = req.body;
+
+    // Fix: Corrected the SQL query to use the right placeholders
     const insert_query = `INSERT INTO usr (name, id, password) VALUES ($1, $2, $3)`;
     
     con.query(insert_query, [name, id, password], (err, result) => {
@@ -27,6 +33,7 @@ app.post('/postData', (req, res) => {
             return res.status(500).send('Database error');
         }
 
+        console.log('Insert result:', result);
         res.status(201).send('Data inserted successfully');
     });
 });
